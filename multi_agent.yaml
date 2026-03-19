@@ -1,0 +1,45 @@
+version: "2026.1"
+project: "pcb-hybrid-aoi"
+
+# 全域配置：掛載「去職責化」憲法
+config:
+  global_rules: "AGENTRULE.md"  # 最高憲法：定義通訊協議、效能指標與品質門檻
+  context_source: "README.md"   # 任務來源：定義當前開發目標與瑕疵類型
+  git_integration:
+    auto_commit: true
+    branch_prefix: "task/aoi-"
+    commit_style: "conventional"
+
+workflow:
+  name: "PCB-AOI-Vision-Sprint"
+  
+  agents:
+    - id: "architect_01"
+      role: "System Architect"
+      instructions: "負責定義數據協議（Schemas）與設計 Fail-soft 回退邏輯。"
+
+    - id: "vision_coder_01"
+      role: "Senior Vision Developer"
+      dependencies: ["architect_01"]
+      instructions: "負責實作演算法邏輯、撰寫單元測試並產出 V1/V2 效能紀錄。"
+
+    - id: "perf_reviewer_01"
+      role: "Performance & QA Auditor"
+      dependencies: ["vision_coder_01"]
+      instructions: "負責執行 130ms 門檻驗證、記憶體安全檢查與測試覆蓋率審核。"
+
+# 執行流：定義產出物（考場）
+execution_flow:
+  - step: "define_spec"
+    agent: "architect_01"
+    output: "docs/contracts/detection_schema.md"
+
+  - step: "develop_logic"
+    agent: "vision_coder_01"
+    input_from: "define_spec"
+    output: "python_research/01_cv_prototype.py"
+
+  - step: "performance_gate"
+    agent: "perf_reviewer_01"
+    input_from: "develop_logic"
+    max_iterations: 3 # 吵架熔斷機制
