@@ -10,6 +10,7 @@ def setup_data():
     # Define project structure
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     data_dir = os.path.join(base_dir, "data", "DeepPCB")
+    alt_data_dir = os.path.join(base_dir, "data", "DeepPCB-master")
     
     print("-" * 40)
     print("🚀 PCB-AOI: Dataset Setup Protocol")
@@ -17,6 +18,10 @@ def setup_data():
 
     if os.path.exists(data_dir):
         print(f"✅ Dataset already exists at: {data_dir}")
+        return
+    
+    if os.path.exists(alt_data_dir):
+        print(f"✅ Found existing dataset at: {alt_data_dir}")
         return
 
     print(f"📦 Source: https://github.com/tangy7/DeepPCB.git")

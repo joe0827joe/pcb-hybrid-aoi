@@ -38,6 +38,18 @@
    * 將 ROI 裁切後送入經 **OpenVINO INT-8** 優化的輕量化模型進行 6 類瑕疵精確分類。
    * **價值：** 確保在複雜紋理下依然具備高度辨識力，解決傳統算法誤報率高的痛點。
 
+### 🚀 快速啟動 (Quick Start)
+
+詳情請參閱 [環境建置手冊 (environment_setup.md)](docs/environment_setup.md)。
+
+```cmd
+# 1. 啟動環境
+conda activate pcb-aoi
+
+# 2. 已就位數據集檢查 (若無數據請參閱數據環境配置一章)
+dir data\DeepPCB-master
+```
+
 ### 核心技術棧 (Tech Stack)
 * **語言：** C++ 17 (利用 Smart Pointers 與 Memory Pool 確保記憶體管理之決定性)。
 * **推論引擎：** Intel OpenVINO Toolkit (針對 Intel AVX-512 指令集優化)。
@@ -67,10 +79,16 @@ python scripts/setup_data.py
 ## 6. 專案目錄結構 (Project Structure)
 ```text
 ├── README.md               # 需求、規格、設計總覽
+├── AGENTRULE.md            # 專案憲法：通訊與效能協議
+├── multi_agent.yaml        # 多 Agent 協作工作流定義
+├── requirements.txt        # Python 依賴清單
 ├── scripts/                # 自動化開發環境腳本
-│   └── setup_data.py       # 數據集自動部署
+│   ├── setup_data.py       # 數據集自動部署
+│   └── debug_commit.py     # Git 提交輔助工具
 ├── docs/
-│   └── DESIGN.md           # 詳細數據契約、類別介面、並發管理說明
+│   ├── environment_setup.md # 環境建置與驗證手冊
+│   └── contracts/          # 數據協議定義目錄 (Planned)
 ├── python_research/        # 模型訓練、INT-8 量化腳本、CV 原型驗證
+│   └── test_data/          # 效能基準測試數據與報告
 └── cpp_deployment/         # C++ 17 部署原始碼 (CMake-based)
 ```
