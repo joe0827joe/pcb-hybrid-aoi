@@ -39,3 +39,13 @@
 
 # debug information files
 *.dwo
+
+# --- PCB-AOI Project Specifics ---
+data/
+DeepPCB-master/
+*.jpg
+*.png
+!python_research/test_data/*.png # Keep sample images for testing
+build/
+bin/
+__pycache__/
