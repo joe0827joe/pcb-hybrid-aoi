@@ -53,10 +53,24 @@
 
 ---
 
-## 5. 專案目錄結構 (Project Structure)
+## 5. 數據環境配置 (Dataset Setup)
+本專案依賴 **DeepPCB** 開放數據集進行開發與驗證。為維持 Repo 整潔，數據集並不包含在版本控制中。
+
+**首次使用請執行下列指令：**
+```bash
+# 自動由 GitHub 抓取 DeepPCB 並放置於 /data/DeepPCB
+python scripts/setup_data.py
+```
+
+---
+
+## 6. 專案目錄結構 (Project Structure)
 ```text
 ├── README.md               # 需求、規格、設計總覽
+├── scripts/                # 自動化開發環境腳本
+│   └── setup_data.py       # 數據集自動部署
 ├── docs/
 │   └── DESIGN.md           # 詳細數據契約、類別介面、並發管理說明
 ├── python_research/        # 模型訓練、INT-8 量化腳本、CV 原型驗證
 └── cpp_deployment/         # C++ 17 部署原始碼 (CMake-based)
+```
