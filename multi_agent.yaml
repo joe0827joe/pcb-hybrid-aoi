@@ -37,8 +37,8 @@ execution_flow:
   - step: "develop_logic"
     agent: "vision_coder_01"
     input_from: "define_spec"
-    output: "python_research/01_cv_prototype.py"
-
+    output: -"python_research/01_cv_prototype.py"
+            -"python_research/test_cv_prototype.py"
   - step: "performance_gate"
     agent: "perf_reviewer_01"
     input_from: "develop_logic"
