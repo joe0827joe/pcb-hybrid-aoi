@@ -16,7 +16,7 @@ workflow:
   agents:
     - id: "architect_01"
       role: "System Architect"
-      instructions: "負責定義數據協議（Schemas）與設計 Fail-soft 回退邏輯。"
+      instructions: "負責根據任務目標建立該 Sprint 的工作分支 (Branching)，並定義數據協議 (Schemas) 與 Fail-soft 邏輯。"
 
     - id: "vision_coder_01"
       role: "Senior Vision Developer"
@@ -26,7 +26,7 @@ workflow:
     - id: "perf_reviewer_01"
       role: "Performance & QA Auditor"
       dependencies: ["vision_coder_01"]
-      instructions: "負責執行 130ms 門檻驗證、記憶體安全檢查與測試覆蓋率審核。"
+      instructions: "負責執行 130ms 門檻驗證與 QA 審核。確認合規後，負責執行該 Sprint 的最終 Git 提交。"
 
 # 執行流：定義產出物（考場）
 execution_flow:
@@ -37,9 +37,15 @@ execution_flow:
   - step: "develop_logic"
     agent: "vision_coder_01"
     input_from: "define_spec"
-    output: -"python_research/01_cv_prototype.py"
-            -"python_research/test_cv_prototype.py"
+    output: 
+      - "python_research/cv_prototype_v1.py"
+      - "python_research/test_cv_prototype.py"
+
   - step: "performance_gate"
     agent: "perf_reviewer_01"
     input_from: "develop_logic"
-    max_iterations: 3 # 吵架熔斷機制
+    output: "python_research/test_data/benchmark_report.txt"
+
+  - step: "finalize_git_checkpoint"
+    agent: "perf_reviewer_01"
+    instructions: "整合所有產出物並執行 git commit --signoff。"
