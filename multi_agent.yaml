@@ -32,6 +32,7 @@ workflow:
 execution_flow:
   - step: "define_spec"
     agent: "architect_01"
+    environment: "Conda: pcb-aoi (python 3.9+)"
     output: "docs/contracts/detection_schema.md"
 
   - step: "develop_logic"
