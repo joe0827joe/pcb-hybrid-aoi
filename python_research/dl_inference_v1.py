@@ -19,26 +19,45 @@ class PCBDeepClassifier:
 
     def preprocess_roi(self, full_image, roi):
         """
-        修正裁切邏輯：將 ROI 採集後 Resize 為模型所需的 64x64
+        [v2 Fix] 採用同尺度固定窗口採樣 (Fixed-Scale Window)
+        避免因為 Resize 導致的瑕疵特徵扭曲
         """
         x1, y1, x2, y2 = map(int, roi)
         h_max, w_max = full_image.shape[:2]
         
-        # 確保邊界不溢出
-        x1, y1 = max(0, x1), max(0, y1)
-        x2, y2 = min(w_max, x2), min(h_max, y2)
+        # 1. 計算幾何中心點
+        cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
         
-        patch = full_image[y1:y2, x1:x2]
-        if patch.size == 0:
-            return np.zeros((1, 1, 64, 64), dtype=np.float32)
+        # 2. 定義 64x64 採樣區間 (half_size = 32)
+        px1, py1 = cx - 32, cy - 32
+        px2, py2 = cx + 32, cy + 32
+        
+        # 3. 邊界溢出保護與滑動校正 (確保永遠採集到 64x64)
+        if px1 < 0:
+            px2 += abs(px1)
+            px1 = 0
+        if py1 < 0:
+            py2 += abs(py1)
+            py1 = 0
+        if px2 > w_max:
+            px1 -= (px2 - w_max)
+            px2 = w_max
+        if py2 > h_max:
+            py1 -= (py2 - h_max)
+            py2 = h_max
+
+        # 4. 執行 1:1 採樣
+        patch = full_image[py1:py2, px1:px2]
+        
+        # 5. 安全墊片：若原圖太小則 Resize (保底措施)
+        if patch.shape[0] != 64 or patch.shape[1] != 64:
+            patch = cv2.resize(patch, (64, 64))
             
-        patch_resized = cv2.resize(patch, (64, 64))
-        # 轉灰階 (若原圖是 BGR)
-        if len(patch_resized.shape) == 3:
-            patch_resized = cv2.cvtColor(patch_resized, cv2.COLOR_BGR2GRAY)
+        # 6. 轉灰階與歸一化
+        if len(patch.shape) == 3:
+            patch = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
             
-        # 歸一化與維度對整 (N, C, H, W)
-        patch_norm = patch_resized.astype(np.float32) / 255.0
+        patch_norm = patch.astype(np.float32) / 255.0
         return patch_norm[np.newaxis, np.newaxis, :, :]
 
     def predict_batch(self, patches_data):
