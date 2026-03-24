@@ -78,17 +78,42 @@ python scripts/setup_data.py
 
 ## 6. 專案目錄結構 (Project Structure)
 ```text
-├── README.md               # 需求、規格、設計總覽
-├── AGENTRULE.md            # 專案憲法：通訊與效能協議
-├── multi_agent.yaml        # 多 Agent 協作工作流定義
-├── requirements.txt        # Python 依賴清單
-├── scripts/                # 自動化開發環境腳本
-│   ├── setup_data.py       # 數據集自動部署
-│   └── debug_commit.py     # Git 提交輔助工具
-├── docs/
-│   ├── environment_setup.md # 環境建置與驗證手冊
-│   └── contracts/          # 數據協議定義目錄 (Planned)
-├── python_research/        # 模型訓練、INT-8 量化腳本、CV 原型驗證
-│   └── test_data/          # 效能基準測試數據與報告
-└── cpp_deployment/         # C++ 17 部署原始碼 (CMake-based)
+pcb-hybrid-aoi/
+├── multi_agent.yaml           # 【核心配置】多代理人協作與 Sprint 流程定義
+├── AGENTRULE.md               # 【最高憲法】通訊協議、效能門檻與品質準則
+├── README.md                  # 【專案導引】當前進度與環境安裝說明
+├── requirements.txt           # 【依賴管理】Python 環境必要套件清單
+│
+├── python_research/           # 🧪 【核心研發】算法 prototype 與 驗證中心
+│   ├── cv_prototype_v1.py     # Stage 1: CV 定位器算法
+│   ├── dl_inference_v1.py     # Stage 2: DL 分類器集成 (OpenVINO)
+│   ├── hybrid_pipeline_v1.py  # 整合管線: 端到端自動化檢測
+│   ├── test_cv_prototype.py   # CV 單元測試
+│   ├── test_dl_inference.py   # DL 單元測試 (含邊緣強健性驗證)
+│   ├── test_integration.py    # 整合測試 (含 130ms 門檻與視覺化產出)
+│   ├── run_all_tests.py       # 自動化測試總控運行器
+│   ├── train_classifier.py    # AI 模型訓練邏輯
+│   ├── visualize_results.py   # 視覺化對比分析 (CV vs. Ground Truth)
+│   ├── pcb_classifier_v1.onnx # 部署用部署權重 (OpenVINO 格式)
+│   └── test_data/             # 📊 各類稽核報告與測試結果圖片
+│
+├── scripts/                   # ⚙️ 【自動化腳本】後勤、維護與數據準備
+│   ├── setup_data.py          # 自動下載原始數據集 (DeepPCB)
+│   ├── preprocess_patches.py  # 將原始圖切成 64x64 小塊
+│   ├── evaluate_accuracy.py   # 準確率基準測試 (拼 95% 以上門檻)
+│   └── export_to_onnx.py      # 模型格式轉換工具 (PTH -> ONNX)
+│
+├── data/                      # 📦 【數據倉儲】大型外部二進位文件
+│   ├── DeepPCB-master/        # 原始數據集與標註檔
+│   └── patches/               # 處理後的小圖塊 (0~6 類別分類存儲)
+│
+├── cpp_deployment/            # 🚀 【未來部署】C++ 高性能移植物件 (開發預留中)
+│   ├── include/               # C++ 標頭檔
+│   └── src/                   # C++ 核心實作
+│
+└── docs/                      # 📑 【文檔中心】標準協議與開發契約
+    └── contracts/
+        └── detection_schema.md # 定義 [x1, y1, x2, y2] 與類別映對標準
+```
+
 ```

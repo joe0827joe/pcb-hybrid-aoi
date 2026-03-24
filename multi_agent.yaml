@@ -41,6 +41,9 @@ execution_flow:
     output: 
       - "python_research/cv_prototype_v1.py"
       - "python_research/test_cv_prototype.py"
+      - "python_research/test_dl_inference.py"
+      - "python_research/test_integration.py"
+      - "python_research/run_all_tests.py"
 
   - step: "performance_gate"
     agent: "perf_reviewer_01"
