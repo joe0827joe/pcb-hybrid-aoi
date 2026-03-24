@@ -46,6 +46,7 @@ DeepPCB-master/
 *.jpg
 *.png
 !python_research/test_data/*.png # Keep sample images for testing
+!python_research/test_data/*.jpg # Keep sample images for testing
 build/
 bin/
 __pycache__/
