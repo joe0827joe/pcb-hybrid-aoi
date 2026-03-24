@@ -28,8 +28,11 @@
 
 ## 4. Git & DevOps Protocol
 - **Branch Strategy:** `main` (Stable), `feat/` (Logic), `fix/` (Bug), `perf/` (Opt). NO direct commits to `main`.
-- **Commit Integrity:** - **Atomic Commits**: One functional goal per commit. NO "Mega-commits".
-    - **Format**: [Conventional Commits](https://www.conventionalcommits.org/).
+- **Commit Integrity & Quality:**
+    - **Atomic Commits**: Each commit must address a single logical goal (e.g., one feature or one refactor). "Mega-commits" are strictly prohibited.
+    - **No Broken Builds**: Every commit must be a stable, executable node. Do not commit code that lacks required environmental configs (`requirements.txt`) or dependencies.
+    - **Context Synchronization**: Changes to file structure, data interfaces, or environments MUST include updates to `README.md` (Project Tree) and configs to ensure "Instant Usability" upon checkout.
+    - **Format Rules**: Follow [Conventional Commits](https://www.conventionalcommits.org/).
 - **Submission Requirements:** Every code change MUST include a **Latency Benchmark Report** and logic summary.
 
 ## 5. Operational Maintenance
