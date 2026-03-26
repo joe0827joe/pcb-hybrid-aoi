@@ -33,7 +33,11 @@
     - **No Broken Builds**: Every commit must be a stable, executable node. Do not commit code that lacks required environmental configs (`requirements.txt`) or dependencies.
     - **Context Synchronization**: Changes to file structure, data interfaces, or environments MUST include updates to `README.md` (Project Tree) and configs to ensure "Instant Usability" upon checkout.
     - **Format Rules**: Follow [Conventional Commits](https://www.conventionalcommits.org/).
-- **Submission Requirements:** Every code change MUST include a **Latency Benchmark Report** and logic summary.
+
+4.4 Audit-First Commitment:
+嚴禁「口頭承諾」已完成。Agent 必須生成 `atomic_audit_signoff.json` 作為數位簽章。若審計報告中任何一項為 false，則自動觸發 on_failure: retry 機制，拒絕進入 Commit 階段。
+
+- **Submission Requirements**: Every code change MUST include a **Latency Benchmark Report** and logic summary.
 
 ## 5. Operational Maintenance
 - **Refactoring Rule:** Prioritize **Extending** existing utility functions over overwriting them.

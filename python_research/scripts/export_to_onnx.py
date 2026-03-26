@@ -3,13 +3,17 @@ import torch.onnx
 import sys
 import os
 
+# 取得目錄路徑
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PR_ROOT = os.path.dirname(SCRIPT_DIR)
+
 # 動態加入路徑以尋找模型定義
-sys.path.append(os.path.abspath("python_research"))
+sys.path.append(os.path.join(PR_ROOT, "src"))
 from train_classifier import TinyPCBNet # 引用模型結構
 
 def export_to_onnx():
-    INPUT_PATH = "python_research/pcb_classifier_v1.pth"
-    OUTPUT_PATH = "python_research/pcb_classifier_v1.onnx"
+    INPUT_PATH = os.path.join(PR_ROOT, "models", "pcb_classifier_v1.pth")
+    OUTPUT_PATH = os.path.join(PR_ROOT, "models", "pcb_classifier_v1.onnx")
     
     # 初始化模型並載入權重
     model = TinyPCBNet()

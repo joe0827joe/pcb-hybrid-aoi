@@ -8,7 +8,8 @@ def setup_data():
     Objective: Automate DeepPCB dataset download and placement.
     """
     # Define project structure
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # Script is in python_research/scripts/, so root is 2 levels up
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     data_dir = os.path.join(base_dir, "data", "DeepPCB")
     alt_data_dir = os.path.join(base_dir, "data", "DeepPCB-master")
     

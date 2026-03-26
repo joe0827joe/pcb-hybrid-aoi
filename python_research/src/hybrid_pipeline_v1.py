@@ -4,11 +4,12 @@ from cv_prototype_v1 import PCBVisionPrototype
 from dl_inference_v1 import PCBDeepClassifier
 
 class HybridAOIPipeline:
-    def __init__(self):
+    def __init__(self, model_path=None):
         # 初始化 Stage 1: CV 定位器 (極速定位)
         self.stage1 = PCBVisionPrototype()
         # 初始化 Stage 2: DL 分類器 (精準濾噪)
-        self.stage2 = PCBDeepClassifier()
+        # [Ambient-Independent] 支持指定測試專用模型路徑
+        self.stage2 = PCBDeepClassifier(model_path=model_path)
         
         # 標註類別對齊 detection_schema.md
         self.classes = ["Background", "Open", "Short", "Mousebite", "Spur", "Copper", "Pin-hole"]
@@ -47,25 +48,4 @@ class HybridAOIPipeline:
         
         return results, total_latency
 
-if __name__ == "__main__":
-    SAMPLE_TEMP = "data/DeepPCB-master/PCBData/group00041/00041/00041000_temp.jpg"
-    SAMPLE_TEST = "data/DeepPCB-master/PCBData/group00041/00041/00041000_test.jpg"
-    
-    pipeline = HybridAOIPipeline()
-    defects, latency = pipeline.inspect(SAMPLE_TEMP, SAMPLE_TEST)
-    
-    print(f"--- [HYBRID PIPELINE] Inspection Report ---")
-    print(f"Total Latency: {latency:.2f} ms")
-    print(f"Total ROIs from Stage 1: {len(defects)}")
-    
-    confirmed_defects = [d for d in defects if d['is_defect']]
-    print(f"Confirmed Defects (Stage 2): {len(confirmed_defects)}")
-    
-    for d in confirmed_defects:
-        print(f"  > Found {d['defect_type']} at {d['roi_coords']} | Conf: {d['confidence']:.2f}")
-    
-    # 效能門檻檢查 (AGENTRULE.md: < 130ms)
-    if latency < 130:
-        print(f"✅ Performance Gate: PASSED (Under 130ms)")
-    else:
-        print(f"❌ Performance Gate: FAILED (Exceeded 130ms)")
+

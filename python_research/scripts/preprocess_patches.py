@@ -4,8 +4,11 @@ import numpy as np
 from tqdm import tqdm
 
 def extract_patches():
-    BASE_DIR = "data/DeepPCB-master/PCBData"
-    OUTPUT_DIR = "data/patches"
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    PROJECT_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
+    
+    BASE_DIR = os.path.join(PROJECT_ROOT, "data", "DeepPCB-master", "PCBData")
+    OUTPUT_DIR = os.path.join(PROJECT_ROOT, "data", "patches")
     PATCH_SIZE = 64
     
     for i in range(7):

@@ -56,20 +56,4 @@ class PCBVisionPrototype:
 
         return rois, metrics
 
-if __name__ == "__main__":
-    # 簡單內部測試路徑 (將由 test_cv_prototype.py 正式調用)
-    SAMPLE_TEMP = "data/DeepPCB-master/PCBData/group00041/00041/00041000_temp.jpg"
-    SAMPLE_TEST = "data/DeepPCB-master/PCBData/group00041/00041/00041000_test.jpg"
-    
-    detector = PCBVisionPrototype()
-    try:
-        if os.path.exists(SAMPLE_TEMP):
-            rois, m = detector.process(SAMPLE_TEMP, SAMPLE_TEST)
-            print(f"--- Benchmark Result (V1 Prototype) ---")
-            print(f"Num ROIs Found: {len(rois)}")
-            print(f"Total Latency: {m['total_latency_ms']:.2f} ms")
-            print(f"Breakdown: {m}")
-        else:
-            print("Sample data not found. Please run scripts/setup_data.py first.")
-    except Exception as e:
-        print(f"Error: {e}")
+

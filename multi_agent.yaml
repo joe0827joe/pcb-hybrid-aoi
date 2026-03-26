@@ -1,55 +1,70 @@
-version: "2026.1"
-project: "pcb-hybrid-aoi"
+  version: "2026.1"
+  project: "pcb-hybrid-aoi"
 
-# 全域配置：掛載「去職責化」憲法
-config:
-  global_rules: "AGENTRULE.md"  # 最高憲法：定義通訊協議、效能指標與品質門檻
-  context_source: "README.md"   # 任務來源：定義當前開發目標與瑕疵類型
-  git_integration:
-    auto_commit: true
-    branch_prefix: "task/aoi-"
-    commit_style: "conventional"
+  # 全域配置：掛載「去職責化」憲法
+  config:
+    global_rules: "AGENTRULE.md"  # 最高憲法：定義通訊協議、效能指標與品質門檻
+    context_source: "README.md"   # 任務來源：定義當前開發目標與瑕疵類型
+    git_integration:
+      auto_commit: true
+      branch_prefix: "task/aoi-"
+      commit_style: "conventional"
 
-workflow:
-  name: "PCB-AOI-Vision-Sprint"
-  
-  agents:
-    - id: "architect_01"
-      role: "System Architect"
-      instructions: "負責根據任務目標建立該 Sprint 的工作分支 (Branching)，並定義數據協議 (Schemas) 與 Fail-soft 邏輯。"
+  workflow:
+    name: "PCB-AOI-Vision-Sprint"
+    
+    agents:
+      - id: "architect_01"
+        role: "System Architect"
+        instructions: "負責根據任務目標建立該 Sprint 的工作分支 (Branching)，並定義數據協議 (Schemas) 與 Fail-soft 邏輯。"
 
-    - id: "vision_coder_01"
-      role: "Senior Vision Developer"
-      dependencies: ["architect_01"]
-      instructions: "負責實作演算法邏輯、撰寫單元測試並產出 V1/V2 效能紀錄。"
+      - id: "vision_coder_01"
+        role: "Senior Vision Developer"
+        dependencies: ["architect_01"]
+        instructions: "負責實作演算法邏輯、撰寫單元測試並產出 V1/V2 效能紀錄。"
 
-    - id: "perf_reviewer_01"
-      role: "Performance & QA Auditor"
-      dependencies: ["vision_coder_01"]
-      instructions: "負責執行 130ms 門檻驗證與 QA 審核。確認合規後，負責執行該 Sprint 的最終 Git 提交。"
+      - id: "perf_reviewer_01"
+        role: "Performance & QA Auditor"
+        dependencies: ["vision_coder_01"]
+        instructions: "負責執行 130ms 門檻驗證與 QA 審核。確認合規後，負責執行該 Sprint 的最終 Git 提交。"
 
-# 執行流：定義產出物（考場）
-execution_flow:
-  - step: "define_spec"
-    agent: "architect_01"
-    environment: "Conda: pcb-aoi (python 3.9+)"
-    output: "docs/contracts/detection_schema.md"
+  # 執行流：定義產出物（考場）
+  execution_flow:
+    - step: "define_spec"
+      agent: "architect_01"
+      environment: "Conda: pcb-aoi (python 3.9+)"
+      output: "docs/contracts/detection_schema.md"
 
-  - step: "develop_logic"
-    agent: "vision_coder_01"
-    input_from: "define_spec"
-    output: 
-      - "python_research/cv_prototype_v1.py"
-      - "python_research/test_cv_prototype.py"
-      - "python_research/test_dl_inference.py"
-      - "python_research/test_integration.py"
-      - "python_research/run_all_tests.py"
+    - step: "develop_logic"
+      agent: "vision_coder_01"
+      input_from: "define_spec"
+      # 這裡加入強制指令
+      instructions: "實作算法後，必須產出對應的 Pytest 案例。嚴禁輸出空白或 TODO 測試。"
+      output: 
+        - "python_research/cv_prototype_v1.py"
+        - "python_research/test_cv_prototype.py" # 這是開發者的自我單元測試
 
-  - step: "performance_gate"
-    agent: "perf_reviewer_01"
-    input_from: "develop_logic"
-    output: "python_research/test_data/benchmark_report.txt"
+    - step: "performance_gate"
+      agent: "perf_reviewer_01"
+      input_from: "develop_logic"
+      # 強制執行與驗證邏輯
+      environment: "Conda: pcb-aoi"
+      commands: 
+        - "pytest python_research/test_cv_prototype.py"
+        - "python python_research/benchmark.py --threshold 130ms"
+      output: "python_research/test_data/benchmark_report.txt"
+      # 關鍵：如果測試失敗，強制回退至 develop_logic
+      on_failure: "retry: develop_logic"
 
-  - step: "finalize_git_checkpoint"
-    agent: "perf_reviewer_01"
-    instructions: "整合所有產出物並執行 git commit --signoff。"
+    - step: "atomic_audit" # 新增：原子化審計階段
+      agent: "perf_reviewer_01"
+      input_from: ["develop_logic", "performance_gate"]
+      instructions: |
+        對照 ATOMIC_CHECKLIST.md 逐項核對。
+        必須產出一個簽署後的 audit_log (atomic_audit_signoff.json)，否則嚴禁進入下一階段。
+      output: "python_research/test_data/atomic_audit_signoff.json"
+
+    - step: "finalize_git_checkpoint"
+      agent: "perf_reviewer_01"
+      input_from: "atomic_audit" # 只有審計通過才能 commit
+      instructions: "讀取 atomic_audit_signoff.json，確認全數通過後執行 git commit --signoff。"

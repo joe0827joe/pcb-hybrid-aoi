@@ -5,6 +5,11 @@ from torch.utils.data import DataLoader
 import os
 import sys
 
+# 取得專案目錄路徑
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PR_ROOT = os.path.dirname(SCRIPT_DIR)
+PROJECT_ROOT = os.path.dirname(PR_ROOT)
+
 # 對齊 train_classifier.py 中的模型架構
 class TinyPCBNet(nn.Module):
     def __init__(self, num_classes=7):
@@ -30,8 +35,8 @@ class TinyPCBNet(nn.Module):
 
 def evaluate_accuracy():
     print("--- [ACCURACY EVALUATION] Starting Final Benchmark ---")
-    MODEL_PATH = "python_research/pcb_classifier_v1.pth"
-    DATA_DIR = "data/patches"
+    MODEL_PATH = os.path.join(PR_ROOT, "models", "pcb_classifier_v1.pth")
+    DATA_DIR = os.path.join(PROJECT_ROOT, "data", "patches")
     
     if not os.path.exists(MODEL_PATH):
         print(f"❌ Error: Model file {MODEL_PATH} not found.")
@@ -96,7 +101,9 @@ def evaluate_accuracy():
             print(f"[{i}] {map_list[i]:<10}: N/A (No samples)")
 
     # 生成正式報告
-    with open("python_research/test_data/accuracy_report.txt", "w", encoding="utf-8") as f:
+    report_file = os.path.join(PR_ROOT, "results", "accuracy_report.txt")
+    os.makedirs(os.path.dirname(report_file), exist_ok=True)
+    with open(report_file, "w", encoding="utf-8") as f:
         f.write("# AOI Classification Accuracy Report\n")
         f.write(f"- Status: {'PASSED' if accuracy >= 95 else 'FAILED'}\n")
         f.write(f"- Total Samples: {total}\n")

@@ -81,39 +81,45 @@ python scripts/setup_data.py
 pcb-hybrid-aoi/
 ├── multi_agent.yaml           # 【核心配置】多代理人協作與 Sprint 流程定義
 ├── AGENTRULE.md               # 【最高憲法】通訊協議、效能門檻與品質準則
+├── ATOMIC_CHECKLIST.md        # 【門禁標準】原子化提交檢核清單
 ├── README.md                  # 【專案導引】當前進度與環境安裝說明
 ├── requirements.txt           # 【依賴管理】Python 環境必要套件清單
 │
-├── python_research/           # 🧪 【核心研發】算法 prototype 與 驗證中心
-│   ├── cv_prototype_v1.py     # Stage 1: CV 定位器算法
-│   ├── dl_inference_v1.py     # Stage 2: DL 分類器集成 (OpenVINO)
-│   ├── hybrid_pipeline_v1.py  # 整合管線: 端到端自動化檢測
-│   ├── test_cv_prototype.py   # CV 單元測試
-│   ├── test_dl_inference.py   # DL 單元測試 (含邊緣強健性驗證)
-│   ├── test_integration.py    # 整合測試 (含 130ms 門檻與視覺化產出)
-│   ├── run_all_tests.py       # 自動化測試總控運行器
-│   ├── train_classifier.py    # AI 模型訓練邏輯
-│   ├── visualize_results.py   # 視覺化對比分析 (CV vs. Ground Truth)
-│   ├── pcb_classifier_v1.onnx # 部署用部署權重 (OpenVINO 格式)
-│   └── test_data/             # 📊 各類稽核報告與測試結果圖片
-│
-├── scripts/                   # ⚙️ 【自動化腳本】後勤、維護與數據準備
-│   ├── setup_data.py          # 自動下載原始數據集 (DeepPCB)
-│   ├── preprocess_patches.py  # 將原始圖切成 64x64 小塊
-│   ├── evaluate_accuracy.py   # 準確率基準測試 (拼 95% 以上門檻)
-│   └── export_to_onnx.py      # 模型格式轉換工具 (PTH -> ONNX)
+├── python_research/           # 🧪 【研發中心】算法原型、模型訓練與驗證中心
+│   ├── src/                   # 核心算法實作 (Core Logic)
+│   │   ├── cv_prototype_v1.py     # Stage 1: CV 定義器算法
+│   │   ├── dl_inference_v1.py     # Stage 2: DL 分類器集成 (OpenVINO)
+│   │   ├── hybrid_pipeline_v1.py  # 整合管線: 端到端自動化檢測
+│   │   └── train_classifier.py    # AI 模型訓練邏輯
+│   │
+│   ├── tests/                 # 自動化測試套件 (pytest)
+│   │   ├── test_cv_prototype.py   # CV 單元測試 (含邊界與錯誤處理)
+│   │   ├── test_dl_inference.py   # DL 單元測試 (含效能與精確度)
+│   │   └── test_integration.py    # 端到端整合測試 (130ms 門檻驗證)
+│   │
+│   ├── scripts/               # 自動化工具腳本
+│   │   ├── benchmark_performance.py # 效能基準測試 (Latency 報告)
+│   │   ├── evaluate_accuracy.py   # 準確率基準測試 (拼 95% 以上門檻)
+│   │   ├── setup_data.py          # 自動下載原始數據集 (DeepPCB)
+│   │   └── export_to_onnx.py      # 模型格式轉換工具 (PTH -> ONNX)
+│   │
+│   ├── models/                # 權重存儲 (pcb_classifier_v1.onnx)
+│   └── results/               # 測試結果與效能報告產出
 │
 ├── data/                      # 📦 【數據倉儲】大型外部二進位文件
 │   ├── DeepPCB-master/        # 原始數據集與標註檔
 │   └── patches/               # 處理後的小圖塊 (0~6 類別分類存儲)
 │
 ├── cpp_deployment/            # 🚀 【未來部署】C++ 高性能移植物件 (開發預留中)
-│   ├── include/               # C++ 標頭檔
-│   └── src/                   # C++ 核心實作
-│
+│   ├── include/               # C++ 標頭檔 (.h)
+│   ├── src/                   # C++ 核心實作 (.cpp)
+│   ├── test/                  # C++ 單元測試
+│   ├── build/                 # 編譯暫存目錄 (CMake 產出)
+│   └── bin/                   # 可執行二進位檔產出位置
 └── docs/                      # 📑 【文檔中心】標準協議與開發契約
-    └── contracts/
-        └── detection_schema.md # 定義 [x1, y1, x2, y2] 與類別映對標準
+    ├── contracts/
+    │   └── detection_schema.md # 定義 [x1, y1, x2, y2] 與類別映對標準
+    └── environment_setup.md    # 環境建置與模型下載手冊 (conda, openvino, dataset)
 ```
 
 ```

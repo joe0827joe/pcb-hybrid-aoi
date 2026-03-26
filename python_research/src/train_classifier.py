@@ -73,8 +73,8 @@ def train_model():
         print(f"Epoch [{epoch+1}/{epochs}], Avg Loss: {total_loss/len(train_loader):.4f}")
 
     # 存檔供 OpenVINO 轉換
-    torch.save(model.state_dict(), "python_research/pcb_classifier_v1.pth")
-    print("✅ Real Model Saved to python_research/pcb_classifier_v1.pth")
+    torch.save(model.state_dict(), "python_research/models/pcb_classifier_v1.pth")
+    print("✅ Real Model Saved to python_research/models/pcb_classifier_v1.pth")
 
 if __name__ == "__main__":
     if os.path.exists("data/patches"):

@@ -1,5 +1,0 @@
-# Unit & Integration Test Summary
-Tests Run: 10
-Errors: 0
-Failures: 0
-Success: True

@@ -2,9 +2,23 @@ import cv2
 import numpy as np
 import time
 import openvino.runtime as ov
+import os
 
 class PCBDeepClassifier:
-    def __init__(self, model_path="python_research/pcb_classifier_v1.onnx", device='CPU'):
+    def __init__(self, model_path=None, device='CPU'):
+        # [Ambient-Independent] 自動定位預設模型路徑
+        if model_path is None:
+            # src -> python_research -> models
+            src_dir = os.path.dirname(os.path.abspath(__file__))
+            model_path = os.path.join(os.path.dirname(src_dir), "models", "pcb_classifier_v1.onnx")
+            
+        # 若是相對路徑，嘗試補齊
+        if not os.path.isabs(model_path) and not os.path.exists(model_path):
+            # 輔助：嘗試在專案結構下搜索
+            alt_path = os.path.join(os.getcwd(), "python_research/models/pcb_classifier_v1.onnx")
+            if os.path.exists(alt_path):
+                model_path = alt_path
+
         print(f"--- [DL Engine] Loading Real Model: {model_path} ---")
         try:
             core = ov.Core()
@@ -87,14 +101,4 @@ class PCBDeepClassifier:
         patch_data = self.preprocess_roi(full_image, roi)
         return self.predict_batch([patch_data])[0]
 
-if __name__ == "__main__":
-    # 單元測試：加載真實 ONNX 並測試一個 Fake ROI
-    try:
-        classifier = PCBDeepClassifier()
-        dummy_img = np.zeros((640, 640), dtype=np.uint8)
-        dummy_roi = [100, 100, 164, 164]
-        
-        clsid, conf = classifier.predict(dummy_img, dummy_roi)
-        print(f"✅ Real AI Prediction: Class {clsid} ({classifier.classes[clsid]}), Conf: {conf:.4f}")
-    except Exception as e:
-        print(f"Check if python_research/pcb_classifier_v1.onnx exists. Error: {e}")
+
