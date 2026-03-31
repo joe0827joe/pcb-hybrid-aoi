@@ -1,0 +1,6 @@
+# Performance Benchmark Report
+CV Stage Avg: 5.83 ms
+DL Batch (10): 3.43 ms
+End-to-End Avg: 13.39 ms
+Threshold: 130 ms
+Status: SUCCESS

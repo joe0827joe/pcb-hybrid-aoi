@@ -40,7 +40,7 @@ def visualize_results(img_path, defects, output_path):
         
     img = cv2.imread(img_path)
     for d in defects:
-        x1, y1, x2, y2 = map(int, d["roi_coords"])
+        x1, y1, x2, y2 = map(int, d["roi"])
         color = (0, 0, 255) if d["is_defect"] else (180, 180, 180)
         thickness = 2 if d["is_defect"] else 1
         
@@ -61,7 +61,7 @@ def test_pipeline_output_structure(pipeline, test_pair):
     visualize_results(test_pair["test"], defects, out_path)
     
     for d in defects:
-        for field in ["defect_type", "confidence", "is_defect", "roi_coords"]:
+        for field in ["class_id", "confidence", "roi", "defect_type", "is_defect"]:
             assert field in d, f"Missing field '{field}'"
         assert isinstance(d["is_defect"], bool)
 

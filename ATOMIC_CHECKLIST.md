@@ -1,17 +1,26 @@
-# 🛠️ Atomic Commit Checklist (門禁標準)
+# 🛠️ Atomic Commit Checklist (Quality Gates)
 
-## Phase 1: 代碼孤立性 (Isolation)
-- [ ] **單一職責**：本次變更是否僅涉及單一功能/Bug/優化？ (如：僅修改了 ROI 邏輯)
-- [ ] **無污染**：是否已移除所有 `print()`, `pdb.set_trace()` 或臨時測試路徑？
+## Phase 1: Code Isolation (Verified during Development)
+- [ ] **Single Responsibility**: Does this change address only a single feature, bugfix, or optimization?
+- [ ] **No Contamination**: Have all `print()`, `pdb.set_trace()`, and temporary test paths been removed?
 
-## Phase 2: 效能與規格 (Performance)
-- [ ] **Latency 達標**：`benchmark.py` 顯示 Latency 是否穩定在 130ms 以內？
-- [ ] **Schema 對齊**：產出的 JSON/Dict 格式是否符合 `detection_schema.md` 定義？
+## Phase 2: Performance & Specs (Verified during Benchmarking)
+- [ ] **Latency Compliance**: Does `scripts/benchmark_performance.py` show stable latency within the **130ms** threshold?
+- [ ] **Schema Alignment**: Is the output JSON/Dict format fully compliant with `detection_schema.md`?
 
-## Phase 3: 工程品質 (Quality)
-- [ ] **測試覆蓋**：`test_cv_prototype.py` 是否包含 Normal, Edge, Error 三種 Case？
-- [ ] **環境同步**：若有新增 library，是否已更新 `requirements.txt` 或 `Conda` 配置？
+## Phase 3: Engineering Quality (Mandatory Testing Standards)
+- [ ] **Unit Tests (FIRST)**:
+  - **F**ast: Do unit tests execute in under 1 second?
+  - **I**ndependent: Are external dependencies removed (e.g., using mocks/fixtures instead of real data folders)?
+  - **R**epeatable: Are results consistent across multiple runs and different environments?
+  - **S**elf-Validating: Are there automated assertions instead of manual log inspections?
+- [ ] **Integration Tests (AABB)**:
+  - **A**tomic: Is each test focused specifically on module interface boundaries?
+  - **A**mbient-Independent: **Strictly no hardcoded absolute paths**; use relative paths or `Path(__file__)`.
+  - **B**oundary-Focused: Are test cases concentrated on data exchange between modules?
+  - **B**ehavior-Driven: Do test cases clearly describe the expected system behavior?
 
-## Phase 4: Git 規範 (DevOps)
-- [ ] **格式合規**：Commit Message 是否符合 `type(scope): subject` 格式？
-- [ ] **文件更新**：`README.md` 的專案樹狀圖是否需要隨此變更更新？
+## Phase 4: DevOps & Git Protocol (Pre-Commit Verification)
+- [ ] **Environment Sync**: If new libraries were added, has `requirements.txt` been updated?
+- [ ] **Commit Compliance**: Does the commit message follow the `type(scope): subject` (Conventional Commits) format?
+- [ ] **Documentation Sync**: Has the Project Tree in `README.md` been updated to reflect these changes?

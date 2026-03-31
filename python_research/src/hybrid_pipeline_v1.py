@@ -37,11 +37,11 @@ class HybridAOIPipeline:
         
         for idx, (roi, (cls_id, confidence)) in enumerate(zip(rois, batch_results)):
             results.append({
-                "roi_id": idx,
-                "roi_coords": roi,
-                "defect_type": self.classes[cls_id],
+                "class_id": cls_id,
                 "confidence": confidence,
-                "is_defect": (cls_id > 0) and (confidence > 0.85) # 濾除非瑕疵類別
+                "roi": roi,
+                "defect_type": self.classes[cls_id],
+                "is_defect": (cls_id > 0) and (confidence > 0.85)
             })
 
         total_latency = (time.time() - overall_start) * 1000

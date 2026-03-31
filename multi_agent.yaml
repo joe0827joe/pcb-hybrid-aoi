@@ -16,17 +16,17 @@
     agents:
       - id: "architect_01"
         role: "System Architect"
-        instructions: "負責根據任務目標建立該 Sprint 的工作分支 (Branching)，並定義數據協議 (Schemas) 與 Fail-soft 邏輯。"
+        instructions: "負責定義數據協議 (Schemas) 與 Fail-soft 邏輯。在定義前必須確保 Interface 符合 AABB 之 Boundary-Focused 要求。"
 
       - id: "vision_coder_01"
         role: "Senior Vision Developer"
         dependencies: ["architect_01"]
-        instructions: "負責實作演算法邏輯、撰寫單元測試並產出 V1/V2 效能紀錄。"
+        instructions: "負責實作演算法邏輯。開發前必須閱讀 `ATOMIC_CHECKLIST.md` Phase 1 & 3。實作單元測試必須符合 FIRST 原則，整合測試必須符合 AABB 原則。"
 
       - id: "perf_reviewer_01"
         role: "Performance & QA Auditor"
         dependencies: ["vision_coder_01"]
-        instructions: "負責執行 130ms 門檻驗證與 QA 審核。確認合規後，負責執行該 Sprint 的最終 Git 提交。"
+        instructions: "負責執行 130ms 門檻驗證。審核時必須對照 `ATOMIC_CHECKLIST.md` 全體 Phase。確認通過後產出 `atomic_audit_signoff.json` 並執行最終 Git 提交。"
 
   # 執行流：定義產出物（考場）
   execution_flow:
@@ -38,33 +38,33 @@
     - step: "develop_logic"
       agent: "vision_coder_01"
       input_from: "define_spec"
-      # 這裡加入強制指令
-      instructions: "實作算法後，必須產出對應的 Pytest 案例。嚴禁輸出空白或 TODO 測試。"
+      # 強制自我稽核指令
+      instructions: "實作算法後，請自我檢查是否符合 ATOMIC Phase 1。測試案例必須符合 FIRST/AABB 規範，嚴禁使用絕對路徑。"
       output: 
-        - "python_research/cv_prototype_v1.py"
-        - "python_research/test_cv_prototype.py" # 這是開發者的自我單元測試
+        - "python_research/src/cv_prototype_v1.py"
+        - "python_research/tests/test_cv_prototype.py" 
 
     - step: "performance_gate"
       agent: "perf_reviewer_01"
       input_from: "develop_logic"
-      # 強制執行與驗證邏輯
       environment: "Conda: pcb-aoi"
       commands: 
-        - "pytest python_research/test_cv_prototype.py"
-        - "python python_research/benchmark.py --threshold 130ms"
-      output: "python_research/test_data/benchmark_report.txt"
-      # 關鍵：如果測試失敗，強制回退至 develop_logic
+        - "pytest python_research/tests/test_cv_prototype.py"
+        - "python python_research/scripts/benchmark_performance.py --threshold 130ms"
+      output: "python_research/results/benchmark_report.json" # 改為 JSON 便於 Agent 讀取
       on_failure: "retry: develop_logic"
 
-    - step: "atomic_audit" # 新增：原子化審計階段
+    - step: "atomic_audit"
       agent: "perf_reviewer_01"
       input_from: ["develop_logic", "performance_gate"]
       instructions: |
-        對照 ATOMIC_CHECKLIST.md 逐項核對。
-        必須產出一個簽署後的 audit_log (atomic_audit_signoff.json)，否則嚴禁進入下一階段。
-      output: "python_research/test_data/atomic_audit_signoff.json"
+        1. 讀取 `benchmark_report.json` 確認效能通過。
+        2. 對照 `ATOMIC_CHECKLIST.md` 的所有 Phase 進行最終人工（Agent）審計。
+        3. 若有任何項未勾選，必須在 Audit Log 中寫明原因並退回重作。
+      output: "python_research/results/atomic_audit_signoff.json"
 
     - step: "finalize_git_checkpoint"
       agent: "perf_reviewer_01"
-      input_from: "atomic_audit" # 只有審計通過才能 commit
-      instructions: "讀取 atomic_audit_signoff.json，確認全數通過後執行 git commit --signoff。"
+      input_from: "atomic_audit"
+      # 強制讀取簽章後才能 commit
+      instructions: "確認 `atomic_audit_signoff.json` 狀態為 Passed 後，撰寫符合 Conventional Commits 之訊息並提交。"
